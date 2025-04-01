@@ -10,9 +10,11 @@ import {
 } from "sequelize";
 import { sequelize } from "../database";
 class User extends Model<InferAttributes<User>, InferCreationAttributes<User>> {
-  declare id: ForeignKey<string>;
+  declare id: CreationOptional<string>;
   declare userName: CreationOptional<string>;
   declare password: CreationOptional<string>;
+  declare phoneNumber: CreationOptional<string>;
+  declare email: CreationOptional<string>;
   declare isActive: CreationOptional<boolean>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
@@ -35,6 +37,12 @@ User.init(
     },
     updatedAt: {
       type: DataTypes.DATE,
+    },
+    email: {
+      type: DataTypes.STRING,
+    },
+    phoneNumber: {
+      type: DataTypes.STRING,
     },
   },
   {
