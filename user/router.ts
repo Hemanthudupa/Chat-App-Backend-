@@ -2,18 +2,21 @@ import { NextFunction, Request, Response, Router } from "express";
 import profile from "../utils/profile/profile-pic";
 const route = Router();
 
-// route.post(
-//   "/sign-up",
-//   async (req: Request, res: Response, next: NextFunction) => {
-//     try {
-//       const {userName,} = req.body;
-//     } catch (error) {
-//       next(error);
-//     }
-//   }
-// );
 route.post(
-  "/profile/user",
+  "/signup",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { userName, password, email, phoneNumber } = req.body;
+      res.status(200).send({
+        ...req.body,
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+route.post(
+  "/profile",
   profile.single("profile"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
