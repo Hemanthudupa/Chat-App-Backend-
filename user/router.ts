@@ -1,15 +1,18 @@
 import { NextFunction, Request, Response, Router } from "express";
 import profile from "../utils/profile/profile-pic";
+import statusCode from "http-status-codes";
+import { signUpUser } from "./module";
 const route = Router();
 
 route.post(
   "/signup",
+  profile.single("profile"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { userName, password, email, phoneNumber } = req.body;
-      res.status(200).send({
-        ...req.body,
-      });
+      const data = req.body;
+      data.destination =
+        req.file?.destination + "\\" + (req as any).file.filename;
+      res.status(statusCode.CREATED).send(await signUpUser(data));
     } catch (error) {
       next(error);
     }
