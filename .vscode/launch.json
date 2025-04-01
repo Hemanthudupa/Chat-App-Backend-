@@ -15,7 +15,9 @@
       "request": "launch",
       "name": "Launch Program",
       "skipFiles": ["<node_internals>/**"],
-      "program": "./main.js"
+      "program": "./main.js",
+      "envFile": "${workspaceFolder}/env/.env"
+
     }
   ]
 }
