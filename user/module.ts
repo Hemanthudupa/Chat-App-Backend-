@@ -1,10 +1,15 @@
 import { Op } from "sequelize";
 import { sequelize } from "../database";
 import { Profile } from "../profile/model";
-import { hashPassword } from "../utils/Authentication";
+import {
+  comparePassword,
+  generateToken,
+  hashPassword,
+} from "../utils/Authentication";
 import { APIError } from "../utils/CustomError";
 import User from "./model";
-import { validateSignUp } from "./validation";
+import { validateSignData, validateSignUp } from "./validation";
+import { compare } from "bcrypt";
 
 export async function signUpUser(data: any) {
   const transaction = await sequelize.transaction();
@@ -52,6 +57,34 @@ export async function signUpUser(data: any) {
   } catch (error) {
     await transaction.rollback();
 
+    throw new APIError((error as APIError).message, (error as APIError).code);
+  }
+}
+
+export async function userLogin(data: any) {
+  try {
+    await validateSignData.validateAsync(data);
+    const user = await User.findOne({
+      where: {
+        email: data.email,
+      },
+    });
+    if (!user) {
+      throw new APIError(" user not found ", "USER NOT FOUND");
+    }
+    const res = await comparePassword(data.password, user.password);
+    if (res) {
+      console.log(" generating token ");
+      const token = await generateToken(user.dataValues);
+      console.log(" token generated ");
+      console.log(token);
+      return {
+        token: token,
+      };
+    } else {
+      throw new APIError(" password not matched ", "PASSWORD NOT MATCHED");
+    }
+  } catch (error) {
     throw new APIError((error as APIError).message, (error as APIError).code);
   }
 }

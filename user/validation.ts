@@ -25,3 +25,14 @@ export const validateSignUp = Joi.object({
     "any.required": "destination is required field ",
   }),
 });
+
+export const validateSignData = Joi.object({
+  email: Joi.string().required().messages({
+    "string.base": "email should be an string ",
+    "any.required": "email is required field ",
+  }),
+  password: Joi.string().required().messages({
+    "string.base": "password should be an string ",
+    "any.required": "password is required field ",
+  }),
+});

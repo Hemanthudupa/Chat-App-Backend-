@@ -1,17 +1,17 @@
 import { NextFunction, Request, Response, Router } from "express";
 import profile from "../utils/profile/profile-pic";
 import statusCode from "http-status-codes";
-import { signUpUser } from "./module";
+import { signUpUser, userLogin } from "./module";
 const route = Router();
 
 route.post(
   "/signup",
+  profile.none(),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
       // data.destination =
       //   req.file?.destination + "\\" + (req as any).file.filename;
-      console.log(data);
       res.status(statusCode.CREATED).send(await signUpUser(data));
     } catch (error) {
       next(error);
@@ -32,4 +32,15 @@ route.post(
   }
 );
 
+route.post(
+  "/login",
+  async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const data = req.body;
+      res.status(statusCode.OK).send(await userLogin(data));
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 export default route;
