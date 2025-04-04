@@ -39,13 +39,13 @@ export async function signUpUser(data: any) {
         raw: true,
       }
     );
-    await Profile.create(
-      {
-        userId: user.id,
-        imageLocation: data.destination ?? "",
-      } as any,
-      { transaction }
-    );
+    // await Profile.create(
+    //   {
+    //     userId: user.id,
+    //     imageLocation: data.destination ?? "",
+    //   } as any,
+    //   { transaction }
+    // );
     await transaction.commit();
 
     return " user created successfully ";

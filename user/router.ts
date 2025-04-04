@@ -6,12 +6,12 @@ const route = Router();
 
 route.post(
   "/signup",
-  profile.single("profile"),
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      data.destination =
-        req.file?.destination + "\\" + (req as any).file.filename;
+      // data.destination =
+      //   req.file?.destination + "\\" + (req as any).file.filename;
+      console.log(data);
       res.status(statusCode.CREATED).send(await signUpUser(data));
     } catch (error) {
       next(error);
