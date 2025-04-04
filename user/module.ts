@@ -74,10 +74,7 @@ export async function userLogin(data: any) {
     }
     const res = await comparePassword(data.password, user.password);
     if (res) {
-      console.log(" generating token ");
       const token = await generateToken(user.dataValues);
-      console.log(" token generated ");
-      console.log(token);
       return {
         token: token,
       };

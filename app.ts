@@ -1,9 +1,11 @@
 import express, { NextFunction, Request, Response } from "express";
 import { APIError } from "./utils/CustomError";
 import morgan from "morgan";
-import route from "./user/router";
+import user from "./user/router";
 import cors from "cors";
 import bodyParser from "body-parser";
+import { ensureUser } from "./utils/Authentication";
+import contact from "./contacts/route";
 export const app = express();
 
 // app.use((req: Request, res: Response, next: NextFunction) => {
@@ -14,10 +16,11 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-app.use("/user", route);
+app.use("/user", user);
+app.use(ensureUser);
+app.use("/contacts", contact);
 
 app.use(errorHandler);
-
 function errorHandler(
   error: Error,
   req: Request,
