@@ -37,54 +37,66 @@ io.on("connect", (socket) => {
   socket.on("private-message", async (obj) => {
     const contact = await Contact.findOne({
       where: { id: obj.to },
-      // include: {
-      //   model: User,
-      //   as: "user",
-      //   attributes: [["id", "userId"]],
-      // },
     });
     if (!contact) {
       throw new APIError("invalid user Id", "INVALID USER ID");
     }
-    console.log(contact.id, " is the user id ");
-    const data = users.get(contact.id);
+    // if (!recipientSocketId) {
+    //   console.log("Recipient is offline or not registered");
+    //   return;
+    // }
+    console.log(obj.message);
+    // socket.to(recipientSocketId).emit("response", {
+    //   from: socket.id, // optional: identify sender
+    //   message: obj.message,
+    // });
+    console.log("sending data ");
+    let recipientSocketId = users.get(contact.contactUserId);
+    socket.to(recipientSocketId).emit("response", {
+      from: socket.id, // optional: identify sender
+      message: obj.message,
+      senderId: contact.id,
+    });
+    console.log("sending data to ", recipientSocketId);
+  });
+  socket.on("register", ({ userId }) => {
+    users.set(userId, socket.id); // Map userId → socket.id
+  });
 
-    console.log(data, " is the end user id ", obj.message);
-  });
-  socket.on("register", async ({ userId }) => {
-    users.set(userId, socket.id);
-    console.log(userId);
-    console.log(" registerred ");
-  });
   socket.on("disconnect", () => {
+    console.log(" invoked disconnection ", users);
     users.forEach((id, key) => {
-      if (id === socket.id) users.delete(key);
+      console.log(id);
+      if (id === socket.id) {
+        console.log(socket.id, "is now disconnected ");
+        users.delete(key);
+      }
     });
   });
-
-  app.use(cors());
-  app.use(express.json());
-  app.use(express.urlencoded({ extended: true }));
-  app.use("/user", user);
-  app.use(ensureUser);
-  app.use("/contacts", contact);
-  app.use(errorHandler);
-  function errorHandler(
-    error: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    if (error instanceof APIError) {
-      res.status(400).send({
-        message: error.message,
-        code: error.code,
-      });
-    } else {
-      res.status(400).send({
-        message: error.message,
-        code: "ERROR !!!",
-      });
-    }
-  }
 });
+
+app.use(cors());
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+app.use("/user", user);
+app.use(ensureUser);
+app.use("/contacts", contact);
+app.use(errorHandler);
+function errorHandler(
+  error: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  if (error instanceof APIError) {
+    res.status(400).send({
+      message: error.message,
+      code: error.code,
+    });
+  } else {
+    res.status(400).send({
+      message: error.message,
+      code: "ERROR !!!",
+    });
+  }
+}
