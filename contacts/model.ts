@@ -65,3 +65,13 @@ Contact.init(
     timestamps: true,
   }
 );
+
+Contact.belongsTo(User, {
+  foreignKey: "userId",
+  as: "user",
+});
+
+User.hasOne(Contact, {
+  foreignKey: "userId",
+  as: "contact",
+});
