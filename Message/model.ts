@@ -18,6 +18,7 @@ export class Message extends Model<
   declare recieverUserId: ForeignKey<User>;
   declare message: CreationOptional<String>;
   declare imagesPath: CreationOptional<String>;
+  declare roomId: CreationOptional<String>;
   declare createdAt: CreationOptional<Date>;
   declare updatedAt: CreationOptional<Date>;
 }
@@ -50,6 +51,7 @@ Message.init(
     },
     message: { type: DataTypes.TEXT },
     imagesPath: { type: DataTypes.TEXT },
+    roomId: { type: DataTypes.TEXT },
   },
   {
     modelName: "message",

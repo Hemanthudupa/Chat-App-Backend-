@@ -13,6 +13,7 @@ import User from "./user/model";
 import { getContactbyId } from "./contacts/module";
 import { Contact } from "./contacts/model";
 import message from "./Message/route";
+import { Message } from "./Message/model";
 export const app = express();
 
 export const server = createServer(app);
@@ -34,7 +35,11 @@ app.use(
 const users = new Map();
 
 io.on("connect", (socket) => {
-  console.log(socket.id, " just now connected ");
+  console.log(
+    socket.handshake.query,
+    " just now connected with an socket id",
+    socket.id
+  );
   socket.on("private-message", async (obj) => {
     const contact = await Contact.findOne({
       where: { id: obj.to },
@@ -68,6 +73,30 @@ io.on("connect", (socket) => {
       }
     });
   });
+  socket.on("create-room", (senderId: string, contactId: string) => {
+    const roomId = [senderId, contactId].sort().join("_"); // cleaner & reliable
+
+    socket.join(roomId);
+  });
+  socket.on(
+    "send-message",
+    async (roomId: string, senderId: any, contactId: any, message: string) => {
+      const contact = await Contact.findOne({ where: { id: contactId } });
+      let newContactId = senderId;
+      await Message.create({
+        roomId,
+        senderUserId: senderId,
+        recieverUserId: contact?.contactUserId,
+        message,
+      } as any);
+      io.to(roomId).emit("recive-message", {
+        roomId,
+        senderId, // the person who sent it
+        receiverId: contactId,
+        message,
+      });
+    }
+  );
 });
 
 app.use(cors());
