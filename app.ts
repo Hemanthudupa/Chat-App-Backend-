@@ -12,6 +12,7 @@ import rateLimit from "express-rate-limit";
 import User from "./user/model";
 import { getContactbyId } from "./contacts/module";
 import { Contact } from "./contacts/model";
+import message from "./Message/route";
 export const app = express();
 
 export const server = createServer(app);
@@ -41,15 +42,9 @@ io.on("connect", (socket) => {
     if (!contact) {
       throw new APIError("invalid user Id", "INVALID USER ID");
     }
-    // if (!recipientSocketId) {
-    //   console.log("Recipient is offline or not registered");
-    //   return;
-    // }
+
     console.log(obj.message);
-    // socket.to(recipientSocketId).emit("response", {
-    //   from: socket.id, // optional: identify sender
-    //   message: obj.message,
-    // });
+
     console.log("sending data ");
     let recipientSocketId = users.get(contact.contactUserId);
     socket.to(recipientSocketId).emit("response", {
@@ -81,6 +76,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/user", user);
 app.use(ensureUser);
 app.use("/contacts", contact);
+app.use("/message", message);
 app.use(errorHandler);
 function errorHandler(
   error: Error,
