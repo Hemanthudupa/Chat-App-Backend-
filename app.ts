@@ -73,16 +73,16 @@ io.on("connect", (socket) => {
       }
     });
   });
-  socket.on("create-room", (senderId: string, contactId: string) => {
-    const roomId = [senderId, contactId].sort().join("_"); // cleaner & reliable
-
+  socket.on("create-room", ({ senderId, contactId }) => {
+    const roomId = [senderId, contactId].sort().join("_");
     socket.join(roomId);
+    console.log(socket.id, "joined room", roomId); // Add this log
   });
+
   socket.on(
     "send-message",
-    async (roomId: string, senderId: any, contactId: any, message: string) => {
+    async ({ roomId, senderId, contactId, message }) => {
       const contact = await Contact.findOne({ where: { id: contactId } });
-      let newContactId = senderId;
       await Message.create({
         roomId,
         senderUserId: senderId,
