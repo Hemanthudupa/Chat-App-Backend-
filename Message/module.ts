@@ -67,16 +67,17 @@ export async function getMessages(details: any) {
     let ele: any;
     for (ele of messages) {
       let i = 1;
-      if (ele.imagesPath.split(";").length > 1) {
-        for (let img of ele.imagesPath.split(";")) {
-          ele.dataValues[`imagesPath${i}`] = await readFileFromPath(img);
-          ++i;
+      if (ele?.imagesPath?.contains(";"))
+        if (ele.imagesPath.split(";").length > 1) {
+          for (let img of ele.imagesPath.split(";")) {
+            ele.dataValues[`imagesPath${i}`] = await readFileFromPath(img);
+            ++i;
+          }
+        } else {
+          ele.dataValues[`imagesPath${i}`] = await readFileFromPath(
+            ele.imagesPath.split(";")[0]
+          );
         }
-      } else {
-        ele.dataValues[`imagesPath${i}`] = await readFileFromPath(
-          ele.imagesPath.split(";")[0]
-        );
-      }
       delete ele.dataValues.imagesPath;
     }
     return messages;

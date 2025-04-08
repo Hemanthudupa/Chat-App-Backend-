@@ -73,25 +73,30 @@ io.on("connect", (socket) => {
       }
     });
   });
-  socket.on("create-room", ({ senderId, contactId }) => {
-    const roomId = [senderId, contactId].sort().join("_");
+  socket.on("create-room", ({ senderUserId, contactId }) => {
+    const roomId = [senderUserId, contactId].sort().join("_");
     socket.join(roomId);
     console.log(socket.id, "joined room", roomId); // Add this log
   });
 
   socket.on(
     "send-message",
-    async ({ roomId, senderId, contactId, message }) => {
-      const contact = await Contact.findOne({ where: { id: contactId } });
+    async ({ roomId, senderUserId, contactId, message }) => {
+      if (!contactId)
+        throw new APIError(
+          " contact id cant be emptied ",
+          " CONTACT ID CANNOT BE EMPTIED "
+        );
+      console.log(contactId, " is the contact id man ");
       await Message.create({
         roomId,
-        senderUserId: senderId,
-        recieverUserId: contact?.contactUserId,
+        senderUserId: senderUserId,
+        recieverUserId: contactId,
         message,
       } as any);
       io.to(roomId).emit("recive-message", {
         roomId,
-        senderId, // the person who sent it
+        senderUserId, // the person who sent it
         receiverId: contactId,
         message,
       });
