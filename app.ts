@@ -32,6 +32,7 @@ app.use(
     windowMs: 1000,
   })
 );
+app.use(morgan("combined"));
 const users = new Map();
 
 io.on("connect", (socket) => {

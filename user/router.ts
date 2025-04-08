@@ -37,7 +37,6 @@ route.post(
   async (req: Request, res: Response, next: NextFunction) => {
     try {
       const data = req.body;
-      console.log(" invoked login ");
       res.status(statusCode.OK).send(await userLogin(data));
     } catch (error) {
       next(error);

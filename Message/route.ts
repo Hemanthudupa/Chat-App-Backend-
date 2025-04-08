@@ -37,4 +37,5 @@ route.get(
     }
   }
 );
+
 export default route;
