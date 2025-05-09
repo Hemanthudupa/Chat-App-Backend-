@@ -14,6 +14,7 @@ import { getContactbyId } from "./contacts/module";
 import { Contact } from "./contacts/model";
 import message from "./Message/route";
 import { Message } from "./Message/model";
+import music from "./music/router";
 export const app = express();
 
 export const server = createServer(app);
@@ -36,11 +37,6 @@ app.use(morgan("combined"));
 const users = new Map();
 
 io.on("connect", (socket) => {
-  console.log(
-    socket.handshake.query,
-    " just now connected with an socket id",
-    socket.id
-  );
   socket.on("private-message", async (obj) => {
     const contact = await Contact.findOne({
       where: { id: obj.to },
@@ -112,6 +108,7 @@ app.use("/user", user);
 app.use(ensureUser);
 app.use("/contacts", contact);
 app.use("/message", message);
+app.use("/music", music);
 app.use(errorHandler);
 function errorHandler(
   error: Error,
